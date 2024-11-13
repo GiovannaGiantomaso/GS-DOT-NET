@@ -1,0 +1,5 @@
+# Ignorar pastas do Visual Studio e arquivos de índice
+.vs/
+*.vscode/
+bin/
+obj/
