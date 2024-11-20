@@ -12,9 +12,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Registro dos repositórios na injeção de dependência
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IConsumoRepository, ConsumoRepository>();
+builder.Services.AddScoped<IHistoricoConsumoRepository, HistoricoConsumoRepository>();
+builder.Services.AddScoped<IFeedbackConsumoRepository, FeedbackConsumoRepository>();
 
 // Adicionar serviços ao contêiner
 builder.Services.AddControllers();
+
+// Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

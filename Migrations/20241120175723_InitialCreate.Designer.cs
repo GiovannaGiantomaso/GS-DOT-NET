@@ -12,8 +12,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace GsDotNet.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241113183130_InitialDatabase")]
-    partial class InitialDatabase
+    [Migration("20241120175723_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,31 @@ namespace GsDotNet.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("FeedbackConsumo", b =>
+                {
+                    b.Property<int>("IdFeedback")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("ID_FEEDBACK");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFeedback"));
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("ID_USUARIO");
+
+                    b.Property<string>("MensagemFeedback")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(255)")
+                        .HasColumnName("MENSAGEM_FEEDBACK");
+
+                    b.HasKey("IdFeedback");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("FEEDBACK_CONSUMO", (string)null);
+                });
 
             modelBuilder.Entity("GsDotNet.Models.ConsumoEnergia", b =>
                 {
@@ -50,7 +75,7 @@ namespace GsDotNet.Migrations
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("CONSUMO_ENERGIA");
+                    b.ToTable("CONSUMO_ENERGIA", (string)null);
                 });
 
             modelBuilder.Entity("GsDotNet.Models.UsuarioEnergia", b =>
@@ -82,13 +107,63 @@ namespace GsDotNet.Migrations
 
                     b.HasKey("IdUsuario");
 
-                    b.ToTable("USUARIO_ENERGIA");
+                    b.ToTable("USUARIO_ENERGIA", (string)null);
+                });
+
+            modelBuilder.Entity("HistoricoConsumo", b =>
+                {
+                    b.Property<int>("IdHistorico")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("ID_HISTORICO");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdHistorico"));
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("ID_USUARIO");
+
+                    b.Property<decimal>("MediaMensal")
+                        .HasColumnType("NUMBER(10,2)")
+                        .HasColumnName("MEDIA_MENSAL");
+
+                    b.Property<decimal>("TotalConsumo")
+                        .HasColumnType("NUMBER(10,2)")
+                        .HasColumnName("TOTAL_CONSUMO");
+
+                    b.HasKey("IdHistorico");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("HISTORICO_CONSUMO", (string)null);
+                });
+
+            modelBuilder.Entity("FeedbackConsumo", b =>
+                {
+                    b.HasOne("GsDotNet.Models.UsuarioEnergia", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("GsDotNet.Models.ConsumoEnergia", b =>
                 {
                     b.HasOne("GsDotNet.Models.UsuarioEnergia", "Usuario")
                         .WithMany("Consumos")
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("HistoricoConsumo", b =>
+                {
+                    b.HasOne("GsDotNet.Models.UsuarioEnergia", "Usuario")
+                        .WithMany()
                         .HasForeignKey("IdUsuario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

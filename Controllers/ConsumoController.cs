@@ -44,11 +44,14 @@ namespace GsDotNet.Controllers
         [HttpPost]
         public async Task<ActionResult<ConsumoEnergia>> CreateConsumo(ConsumoEnergia consumo)
         {
+            consumo.DataRegistro = DateTime.Now;
+
             _context.Consumos.Add(consumo);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetConsumo), new { id = consumo.IdConsumo }, consumo);
         }
+
 
         // PUT: api/Consumo/{id}
         [HttpPut("{id}")]

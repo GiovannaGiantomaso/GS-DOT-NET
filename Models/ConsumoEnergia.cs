@@ -17,7 +17,7 @@ namespace GsDotNet.Models
         public int IdUsuario { get; set; }
 
         [Column("DATA_REGISTRO", TypeName = "DATE")]
-        public DateTime DataRegistro { get; set; } = DateTime.Now;
+        public DateTime DataRegistro { get; set; } = DateTime.Now; // Preenche automaticamente com a data atual
 
         [Column("CONSUMO_KWH", TypeName = "NUMBER(10,2)")]
         public decimal ConsumoKwh { get; set; }

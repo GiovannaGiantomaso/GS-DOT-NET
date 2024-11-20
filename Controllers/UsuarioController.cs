@@ -2,6 +2,7 @@
 using GsDotNet.Data;
 using GsDotNet.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,20 +19,35 @@ public class UsuarioController : ControllerBase
 
     // GET: api/Usuario
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UsuarioEnergia>>> GetUsuarios()
+    public async Task<ActionResult<IEnumerable<object>>> GetUsuarios()
     {
-        return await _context.Usuarios
-                             .Include(u => u.Consumos)
-                             .ToListAsync();
+        var usuarios = await _context.Usuarios
+                                      .Include(u => u.Consumos) // Inclui os consumos
+                                      .ToListAsync();
+
+        var resultado = usuarios.Select(usuario => new
+        {
+            Usuario = new
+            {
+                usuario.IdUsuario,
+                usuario.Nome,
+                usuario.Email
+            },
+            Consumos = usuario.Consumos,
+            HistoricosConsumo = _context.HistoricosConsumo.Where(h => h.IdUsuario == usuario.IdUsuario).ToList(),
+            FeedbacksConsumo = _context.FeedbacksConsumo.Where(f => f.IdUsuario == usuario.IdUsuario).ToList()
+        });
+
+        return Ok(resultado);
     }
 
 
     // GET: api/Usuario/{id}
     [HttpGet("{id}")]
-    public async Task<ActionResult<UsuarioEnergia>> GetUsuario(int id)
+    public async Task<ActionResult<object>> GetUsuario(int id)
     {
         var usuario = await _context.Usuarios
-                                    .Include(u => u.Consumos)
+                                    .Include(u => u.Consumos) // Inclui os consumos
                                     .FirstOrDefaultAsync(u => u.IdUsuario == id);
 
         if (usuario == null)
@@ -39,7 +55,20 @@ public class UsuarioController : ControllerBase
             return NotFound();
         }
 
-        return usuario;
+        var resultado = new
+        {
+            Usuario = new
+            {
+                usuario.IdUsuario,
+                usuario.Nome,
+                usuario.Email
+            },
+            Consumos = usuario.Consumos,
+            HistoricosConsumo = await _context.HistoricosConsumo.Where(h => h.IdUsuario == id).ToListAsync(),
+            FeedbacksConsumo = await _context.FeedbacksConsumo.Where(f => f.IdUsuario == id).ToListAsync()
+        };
+
+        return Ok(resultado);
     }
 
 
